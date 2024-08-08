@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  virtuoso:
+    image: openlink/virtuoso-opensource-7
+    ports:
+      - "8890:8890"
+      - "1111:1111"
+    environment:
+      - DBA_PASSWORD=dba
+
+  qanary-pipeline:
+    image: qanary/qanary-pipeline:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - VIRTUOSO_URL=jdbc:virtuoso://141.57.68.220:1111
+      - VIRTUOSO_USERNAME=dba
+      - VIRTUOSO_PASSWORD=dba
+      - EXPLANATION_SERVICE=http://demos.swe.htwk-leipzig.de:40190/explain
+      - SERVER_HOST=http://141.57.68.220
+
+  qanary-ned:
+    image: qanary/qanary-component-ned-dbpediaspotlight:latest
+    ports:
+      - "10008:10008"
+    environment:
+      - SERVER_HOST=http://141.57.68.220
+      - SPRING_BOOT_ADMIN_URL=http://141.57.68.220:8080
+      - SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE_BASE_URL=http://141.57.68.220:10008
+      - SPRING_BOOT_ADMIN_CLIENT_SERVICE-BASE-URL=http://141.57.68.220:10008
+      - EXPLANATION_SERVICE=http://demos.swe.htwk-leipzig.de:40190
+
+  qanary-qb:
+    image: qanary/qanary-component-qb-birthdata-wikidata:latest
+    ports:
+      - "5555:5555" 
+    environment:
+      - SERVER_HOST=http://141.57.68.220
+      - SPRING_BOOT_ADMIN_URL=http://141.57.68.220:8080
+      - SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE_BASE_URL=http://141.57.68.220:5555
+      - SPRING_BOOT_ADMIN_CLIENT_SERVICE-BASE-URL=http://141.57.68.220:5555
+      - EXPLANATION_SERVICE=http://demos.swe.htwk-leipzig.de:40190
+
+  qanary-qe:
+    image: qanary/qanary-component-qe-sparqlexecuter:latest
+    ports:
+      - "10010:10010"
+    environment:
+      - SERVER_HOST=http://141.57.68.220
+      - SPRING_BOOT_ADMIN_URL=http://141.57.68.220:8080
+      - SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE_BASE_URL=http://141.57.68.220:10010
+      - SPRING_BOOT_ADMIN_CLIENT_SERVICE-BASE-URL=http://141.57.68.220:10010
+      - EXPLANATION_SERVICE=http://demos.swe.htwk-leipzig.de:40190
